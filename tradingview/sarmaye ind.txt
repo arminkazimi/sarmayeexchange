@@ -21,29 +21,35 @@ buy_long= false
 close_long= false
 sell_short= false
 close_short= false
+crossover = false
+crossunder  = false
+
+crossover := ta.crossover(short_ema,med_ema)
+crossunder := ta.crossunder(short_ema,med_ema)
 
 // for LONG
-if close > long_ema
-    if short_ema[1] < med_ema[1] and short_ema[0] > med_ema[0]
+if short_ema[1] > long_ema[1] and med_ema[1] > long_ema[1]
+    if crossover
         buy_long := true
 
 
-    if short_ema[1] > med_ema[1] and short_ema[0] < med_ema[0]
-        close_long := true
+    // if short_ema[1] > med_ema[1] and short_ema[0] < med_ema[0]
+    //     close_long := true
 
 // for SHORT
-if close < long_ema
-    if short_ema[1] > med_ema[1] and short_ema[0] < med_ema[0]
+if short_ema[1] < long_ema[1] and med_ema[1] < long_ema[1]
+    if crossunder
         sell_short := true
 
 
-    if short_ema[1] < med_ema[1] and short_ema[0] > med_ema[0]
-        close_short := true
+    // if short_ema[1] < med_ema[1] and short_ema[0] > med_ema[0]
+    //     close_short := true
 
 plotshape(buy_long, style=shape.labelup,location=location.belowbar,color=color.aqua,size=size.small)
 plotshape(sell_short, style=shape.labeldown,location=location.abovebar,color=color.red,size=size.small)
 
 alertcondition(buy_long, title="open long",message="open long position")
-alertcondition(close_long, title="close long",message="close long position")
+// alertcondition(close_long, title="close long",message="close long position")
 alertcondition(sell_short, title="open short",message="open short position")
-alertcondition(close_short, title="close short",message="close shortclose position")
+// alertcondition(close_short, title="close short",message="close shortclose position")
+
