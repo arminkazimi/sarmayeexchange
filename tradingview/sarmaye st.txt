@@ -1,0 +1,64 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © arminkazimi
+
+//@version=5
+strategy("Sarmayeexchange strategy", overlay=true)
+
+long_term = input.int(99,title="long-term",tooltip="long term ema")
+med_term = input.int(25,title="med-term",tooltip="med term ema")
+short_term = input.int(9,title="shord-term",tooltip="short term ema")
+
+tp = input.float(12,title="tp",tooltip="take profit Percentage",minval=0)
+sl = input.float(3,title="sl",tooltip="stop loss Percentage",minval=0,maxval=100)
+tp:=tp/100
+sl:=sl/100
+long_tp=0.0
+long_sl=0.0
+short_tp=0.0
+short_sl=0.0
+long_ma = ta.ema(close,long_term)
+med_ma = ta.ema(close,med_term)
+short_ma = ta.ema(close,short_term)
+
+
+plot(long_ma)
+plot(med_ma)
+plot(short_ma)
+
+// for LONG
+if strategy.position_size == 0
+    if close[1] > long_ma[1]
+        if short_ma[2] < med_ma[2] and short_ma[1] > med_ma[1]
+            // buy_long := true
+            id = "long" + str.tostring(time("") / 100000)
+            strategy.entry(id='long',direction=strategy.long)
+else
+    if short_ma[2] > med_ma[2] and short_ma[1] < med_ma[1]
+        // close_long := true
+        strategy.close(id='long')
+        
+long_tp:=strategy.position_avg_price*(1+tp)
+long_sl:=strategy.position_avg_price*(1-sl)
+strategy.exit(id="TP/SL long",from_entry='long',stop=long_sl,limit=long_tp)        
+
+
+// for SHORT
+if strategy.position_size == 0
+    if close[1] < long_ma[1]
+        if short_ma[2] > med_ma[2] and short_ma[1] < med_ma[1]
+            // sell_short := true
+            id = "short" + str.tostring(time("") / 100000)
+            strategy.entry(id='short',direction=strategy.short)
+else
+    if short_ma[2] < med_ma[2] and short_ma[1] > med_ma[1]
+        // close_short := true
+        strategy.close(id='short')
+        
+short_tp:=strategy.position_avg_price*(1-tp)
+short_sl:=strategy.position_avg_price*(1+sl)
+strategy.exit(id="TP/SL short",from_entry='short',stop=short_sl,limit=short_tp)
+    
+        
+        
+       
+       
