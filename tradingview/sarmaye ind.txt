@@ -2,19 +2,21 @@
 // © arminkazimi
 
 //@version=5
-indicator(title="Sarmayeexchange indicator",overlay=true)
+indicator(title="ind with arrow",overlay=true)
 
 long_term = input.int(99,title="long-term",tooltip="long term ema")
 med_term = input.int(25,title="med-term",tooltip="med term ema")
 short_term = input.int(9,title="shord-term",tooltip="short term ema")
+is_display = input.bool(true, "display plots")
 
 long_ema = ta.ema(close,long_term)
 med_ema = ta.ema(close,med_term)
 short_ema = ta.ema(close,short_term)
 
-plot(long_ema ,color=color.gray,title="Long term EMA")
-plot(med_ema,color=color.olive, title="Med term EMA")
-plot(short_ema,color=color.orange, title="Short term EMA")
+plot(long_ema ,color=is_display? color.gray:na,title="Long term EMA")
+plot(med_ema,color=is_display? color.olive:na, title="Med term EMA")
+plot(short_ema,color=is_display? color.orange:na, title="Short term EMA")
+
 buy_long= false
 close_long= false
 sell_short= false
@@ -22,20 +24,25 @@ close_short= false
 
 // for LONG
 if close > long_ema
-    if short_ema[2] < med_ema[2] and short_ema[1] > med_ema[1]
+    if short_ema[1] < med_ema[1] and short_ema[0] > med_ema[0]
         buy_long := true
 
-    if short_ema[2] > med_ema[2] and short_ema[1] < med_ema[1]
+
+    if short_ema[1] > med_ema[1] and short_ema[0] < med_ema[0]
         close_long := true
 
 // for SHORT
 if close < long_ema
-    if short_ema[2] > med_ema[2] and short_ema[1] < med_ema[1]
+    if short_ema[1] > med_ema[1] and short_ema[0] < med_ema[0]
         sell_short := true
-    
-    if short_ema[2] < med_ema[2] and short_ema[1] > med_ema[1]
+
+
+    if short_ema[1] < med_ema[1] and short_ema[0] > med_ema[0]
         close_short := true
-   
+
+plotshape(buy_long, style=shape.labelup,location=location.belowbar,color=color.aqua,size=size.small)
+plotshape(sell_short, style=shape.labeldown,location=location.abovebar,color=color.red,size=size.small)
+
 alertcondition(buy_long, title="open long",message="open long position")
 alertcondition(close_long, title="close long",message="close long position")
 alertcondition(sell_short, title="open short",message="open short position")
