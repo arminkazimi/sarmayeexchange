@@ -1,0 +1,6 @@
+requests
+pandas
+backtrader
+matplotlib
+asyncio
+flask
